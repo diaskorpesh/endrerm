@@ -1,0 +1,42 @@
+package com.zoo.management;
+
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/zookeepers")
+public class ZooKeeperController {
+    private final ZooKeeperRepository zooKeeperRepository;
+
+    public ZooKeeperController(ZooKeeperRepository zooKeeperRepository) {
+        this.zooKeeperRepository = zooKeeperRepository;
+    }
+
+
+    @GetMapping
+    public List<ZooKeeper> getAllZooKeepers() {
+        return zooKeeperRepository.findAll();
+    }
+
+
+    @PostMapping
+    public ZooKeeper createZooKeeper(@RequestBody ZooKeeper zooKeeper) {
+        return zooKeeperRepository.save(zooKeeper);
+    }
+
+
+    @PutMapping("/{id}")
+    public ZooKeeper updateZooKeeper(@PathVariable Long id, @RequestBody ZooKeeper updatedZooKeeper) {
+        return zooKeeperRepository.findById(id).map(zooKeeper -> {
+            zooKeeper.setName(updatedZooKeeper.getName());
+            zooKeeper.setExperienceYears(updatedZooKeeper.getExperienceYears());
+            return zooKeeperRepository.save(zooKeeper);
+        }).orElseThrow(() -> new RuntimeException("ZooKeeper not found"));
+    }
+
+
+    @DeleteMapping("/{id}")
+    public void deleteZooKeeper(@PathVariable Long id) {
+        zooKeeperRepository.deleteById(id);
+    }
+}
